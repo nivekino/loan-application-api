@@ -8,7 +8,7 @@ import creditRoutes from "./routes/credit.routes";
 import logger from "./utils/logger";
 import { connectToDatabase } from "./database";
 import dotenv from "dotenv";
-
+import tokenAutentication from "./middlewares/tokenAutentication";
 dotenv.config();
 
 try {
@@ -24,6 +24,8 @@ try {
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   };
+
+  tokenAutentication.init();
 
   app.use(cors(corsOptions));
   app.use(helmet());

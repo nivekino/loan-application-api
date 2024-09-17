@@ -8,7 +8,7 @@ import passport from "passport";
 import { Request, Response, NextFunction } from "express";
 import { UserModel } from "../models/user.schema";
 
-const JWT_SECRET = process.env.JWT_SECRET as string;
+const JWT_SECRET = "xGH07sUaXD1";
 
 const init = (): void => {
   const opts: StrategyOptions = {

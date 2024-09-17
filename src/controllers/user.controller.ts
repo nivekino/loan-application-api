@@ -3,7 +3,7 @@ import { UserModel } from "../models/user.schema";
 import jwt from "jsonwebtoken";
 import logger from "../utils/logger";
 
-const JWT_SECRET = process.env.JWT_SECRET as string;
+const jwtSing = "xGH07sUaXD1";
 
 // Controller for user login (generates a JWT token)
 export const loginUsers = async (req: Request, res: Response) => {
@@ -20,14 +20,14 @@ export const loginUsers = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    const token = jwt.sign(
+    let token = jwt.sign(
       { userId: user._id, correoElectronico: user.correoElectronico },
-      JWT_SECRET,
+      jwtSing,
       { expiresIn: "1h" }
     );
 
     logger.info("Generated JWT Token", token);
-    res.status(200).json({ token });
+    res.status(200).json({ message: "Login succesfully", token: token });
   } catch (error) {
     res.status(500).json({ message: "Error during login", error });
   }

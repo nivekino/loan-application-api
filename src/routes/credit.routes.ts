@@ -11,16 +11,14 @@ import tokenAutentication from "../middlewares/tokenAutentication";
 
 const router = Router();
 
-tokenAutentication.init();
-
 // Routes for credits
-router.post("/credits", tokenAutentication.protectWithJwt, createCredit);
+router.post("/credits", createCredit);
 router.get("/credits/", tokenAutentication.protectWithJwt, getCredits);
 router.get("/credits/:id", tokenAutentication.protectWithJwt, getCreditById);
 router.put("/credits/:id", tokenAutentication.protectWithJwt, updateCredit);
 router.delete("/credits/:id", tokenAutentication.protectWithJwt, deleteCredit);
 
-// Routes for users (login and register should remain unprotected)
+// Routes for users
 router.post("/login", loginUsers);
 router.post("/register", createUser);
 
