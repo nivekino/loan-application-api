@@ -1,11 +1,11 @@
-// src/types/custom.d.ts
-import { Request } from 'express';
-import { Multer } from 'multer';
+import { Multer } from "multer";
 
 declare global {
-    namespace Express {
-        interface Request {
-            file?: Multer.File;
-        }
+  namespace Express {
+    interface Request {
+      files?: {
+        [fieldname: string]: Multer.File[];
+      };
     }
+  }
 }
