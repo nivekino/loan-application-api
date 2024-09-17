@@ -1,42 +1,11 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { UserModel } from "../models/user.schema";
-import bcrypt from "bcrypt";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+import logger from "../utils/logger";
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
-interface CustomJwtPayload extends JwtPayload {
-  userId: string;
-}
-
-declare module "express-serve-static-core" {
-  interface Request {
-    userId?: string;
-  }
-}
-
-const verifyToken = (req: Request, res: Response, next: NextFunction) => {
-  const token = req.headers["authorization"];
-
-  if (!token) {
-    return res.status(403).json({ message: "No token provided" });
-  }
-
-  jwt.verify(token, JWT_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(500).json({ message: "Failed to authenticate token" });
-    }
-
-    if (typeof decoded !== "string" && (decoded as CustomJwtPayload).userId) {
-      req.userId = (decoded as CustomJwtPayload).userId;
-    } else {
-      return res.status(500).json({ message: "Invalid token payload" });
-    }
-
-    next();
-  });
-};
-
+// Controller for user login (generates a JWT token)
 export const loginUsers = async (req: Request, res: Response) => {
   try {
     const { correoElectronico, password } = req.body;
@@ -46,7 +15,7 @@ export const loginUsers = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
@@ -57,12 +26,14 @@ export const loginUsers = async (req: Request, res: Response) => {
       { expiresIn: "1h" }
     );
 
+    logger.info("Generated JWT Token", token);
     res.status(200).json({ token });
   } catch (error) {
     res.status(500).json({ message: "Error during login", error });
   }
 };
 
+// Controller for user registration
 export const createUser = async (req: Request, res: Response) => {
   try {
     const { nombres, apellidos, correoElectronico, password } = req.body;

@@ -7,16 +7,20 @@ import {
   deleteCredit,
 } from "../controllers/credit.controller";
 import { loginUsers, createUser } from "../controllers/user.controller";
+import tokenAutentication from "../middlewares/tokenAutentication";
+
 const router = Router();
 
-// router for credits
-router.post("/credits", createCredit);
-router.get("/credits/", getCredits);
-router.get("/credits/:id", getCreditById);
-router.put("/credits/:id", updateCredit);
-router.delete("/credits/:id", deleteCredit);
+tokenAutentication.init();
 
-// router for users
+// Routes for credits
+router.post("/credits", tokenAutentication.protectWithJwt, createCredit);
+router.get("/credits/", tokenAutentication.protectWithJwt, getCredits);
+router.get("/credits/:id", tokenAutentication.protectWithJwt, getCreditById);
+router.put("/credits/:id", tokenAutentication.protectWithJwt, updateCredit);
+router.delete("/credits/:id", tokenAutentication.protectWithJwt, deleteCredit);
+
+// Routes for users (login and register should remain unprotected)
 router.post("/login", loginUsers);
 router.post("/register", createUser);
 
