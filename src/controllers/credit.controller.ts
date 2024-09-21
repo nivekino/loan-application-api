@@ -29,7 +29,7 @@ export const createCredit = async (req: MulterRequest, res: Response) => {
     if (err) {
       return res
         .status(400)
-        .json({ message: "Error uploading files", error: err.message });
+        .json({ message: "Error al subir archivos", error: err.message });
     }
 
     try {
@@ -37,9 +37,9 @@ export const createCredit = async (req: MulterRequest, res: Response) => {
       const idFiles = req.files?.["documentoIdentidad"];
 
       if (!selfieFile) {
-        return res
-          .status(400)
-          .json({ message: "Selfie is required for face detection" });
+        return res.status(400).json({
+          message: "La selfie es requerida para la detección de rostro",
+        });
       }
 
       // Upload the selfie image to Cloudinary
@@ -60,7 +60,7 @@ export const createCredit = async (req: MulterRequest, res: Response) => {
       if (!isFaceDetected) {
         return res
           .status(404)
-          .json({ message: "No face detected in the uploaded selfie" });
+          .json({ message: "No se detectó un rostro en la selfie subida" });
       }
 
       // Upload the documentoIdentidad images to Cloudinary
@@ -97,13 +97,12 @@ export const createCredit = async (req: MulterRequest, res: Response) => {
       await newCredit.save();
 
       res.status(201).json({
-        message: "Credit created successfully",
+        message: "Crédito creado exitosamente",
         data: newCredit,
       });
     } catch (error) {
-      console.error("Error creating credit", error);
       res.status(500).json({
-        message: "Error creating credit",
+        message: "Error al crear el crédito",
         error: error.message,
       });
     }
@@ -119,7 +118,7 @@ export const getCredits = async (req: Request, res: Response) => {
 
     res.status(200).json(credits);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching credits", error });
+    res.status(500).json({ message: "Error al obtener créditos", error });
   }
 };
 
@@ -129,12 +128,12 @@ export const getCreditById = async (req: Request, res: Response) => {
     const credit = await CreditModel.findById(id);
 
     if (!credit) {
-      return res.status(404).json({ message: "Credit not found" });
+      return res.status(404).json({ message: "Crédito no encontrado" });
     }
 
     res.status(200).json(credit);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching credit", error });
+    res.status(500).json({ message: "Error al obtener el crédito", error });
   }
 };
 
